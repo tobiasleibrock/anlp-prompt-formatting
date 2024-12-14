@@ -45,3 +45,5 @@ tqdm==4.67.1
 traitlets==5.14.3
 typing_extensions==4.12.2
 wcwidth==0.2.13
+transformers==4.47.0
+sentence_transformers==3.3.1
