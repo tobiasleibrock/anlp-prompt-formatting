@@ -1,17 +1,23 @@
 from typing import Callable, List
 
-class Template:
-    
-    def __init__(self,
-                 model_instructions: str,
-                 task: str,
-                 demonstrations: List[dict] = None,
-                 separator: str = "",
-                 word_separator: str = "",
-                 casing: Callable[[str], str] = lambda x: x,
-                 field_separator: str = "",
-                 item_formatter: Callable[[str], str] = lambda x: x,
-                 enumerator_format: Callable[[str], str] = lambda x: x):
+
+class PromptTemplate:
+    """
+    A class to construct prompts for a model.
+    """
+
+    def __init__(
+        self,
+        model_instructions: str,
+        task: str,
+        demonstrations: List[dict] = None,
+        separator: str = "",
+        word_separator: str = "",
+        casing: Callable[[str], str] = lambda x: x,
+        field_separator: str = "",
+        item_formatter: Callable[[str], str] = lambda x: x,
+        enumerator_format: Callable[[str], str] = lambda x: x,
+    ):
         """
         :param model_instructions: Instructions to the model e.g. "Respond in Pirate English."
         :param demonstrations: List of example input/output pairs that demonstrate the task
@@ -46,7 +52,9 @@ class Template:
         """
         Formats enumerations (e.g., multiple-choice options) with specific formatting for items.
         """
-        formatted_items = [self.format_field(descriptor, self.item_formatter(i)) for i in items]
+        formatted_items = [
+            self.format_field(descriptor, self.item_formatter(i)) for i in items
+        ]
         return self.format_prompt(formatted_items)
 
     def construct_prompt(self):
@@ -55,10 +63,11 @@ class Template:
         """
         instruction = self.casing(self.model_instructions)
         formatted_examples = [
-            self.format_field("Example", demonstration) for demonstration in self.demonstrations
+            self.format_field("Example", demonstration)
+            for demonstration in self.demonstrations
         ]
         formatted_task = self.format_field("Task", self.task)
-        enumeration = self.format_enumeration(
-            "Option", range(1, 4)
+        enumeration = self.format_enumeration("Option", range(1, 4))
+        return self.format_prompt(
+            [instruction] + formatted_examples + [formatted_task, enumeration]
         )
-        return self.format_prompt([instruction] + formatted_examples + [formatted_task, enumeration])

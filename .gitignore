@@ -107,3 +107,12 @@ cython_debug/
 
 # Natural Instructions
 natural-instructions/
+
+# cursor
+.cursorrules
+
+.vscode/
+logs/
+papers/
+results/
+Updates.md
