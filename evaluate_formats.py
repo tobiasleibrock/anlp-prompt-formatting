@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 import aisuite as ai
 from task_formatters import get_task_formatter, load_task
 from formatters import S1, S2, C, Fcasing, Fitem1, Fitem2
+from prompt_template import PromptTemplate
 
 
 def setup_logging(task_id: str):
@@ -69,12 +70,12 @@ def sample_format_params() -> Tuple[str, str, callable, str, callable, callable]
 
 def evaluate_format(
     task_id: str,
+    definition: str,
     instances: List[Dict[str, Any]],
     format_params: Tuple[str, str, callable, str, callable, callable],
     num_samples: int = 10,
 ) -> float:
     """Evaluate a specific format on a task."""
-    formatter = get_task_formatter(task_id)
     correct = 0
     total = 0
 
@@ -85,31 +86,38 @@ def evaluate_format(
 
     for i, instance in enumerate(eval_instances, 1):
         try:
-            prompt = formatter(instance, *format_params)
-            logging.debug(f"Formatted prompt for instance {i}:\n{prompt}")
+            template = PromptTemplate(
+                definition,
+                instance["input"],
+                ["Beginning:", "Middle 1:", "Middle 2:", "Ending:"],
+                [],
+                *format_params,
+            )
+            formatted_prompt = template.construct_prompt()
+            logging.info(f"Formatted prompt for instance {i}:\n{formatted_prompt}")
 
             messages = [
                 {"role": "system", "content": "You are a helpful AI assistant."},
-                {"role": "user", "content": prompt},
+                {"role": "user", "content": formatted_prompt},
             ]
 
-            # response = client.chat.completions.create(
-            #     model=MODEL, messages=messages, temperature=0.0
-            # )
-            # prediction = response.choices[0].message.content.strip()
-            # ground_truth = instance["output"][0]
+            response = client.chat.completions.create(
+                model=MODEL, messages=messages, temperature=0.0
+            )
+            prediction = response.choices[0].message.content.strip()
+            ground_truth = instance["output"][0]
 
-            # # Log prediction details
-            # is_correct = prediction == ground_truth
-            # correct += int(is_correct)
-            # total += 1
+            # Log prediction details
+            is_correct = prediction == ground_truth
+            correct += int(is_correct)
+            total += 1
 
-            # logging.info(
-            #     f"Instance {i}/{len(eval_instances)} - "
-            #     f"Prediction: {prediction}, "
-            #     f"Ground Truth: {ground_truth}, "
-            #     f"Correct: {is_correct}"
-            # )
+            logging.info(
+                f"Instance {i}/{len(eval_instances)} - "
+                f"Prediction: {prediction}, "
+                f"Ground Truth: {ground_truth}, "
+                f"Correct: {is_correct}"
+            )
 
         except Exception as e:
             logging.error(f"Error evaluating instance {i}: {str(e)}", exc_info=True)
@@ -122,7 +130,7 @@ def evaluate_format(
     return accuracy
 
 
-def evaluate_task(task_id: str, num_formats: int = 10, samples_per_format: int = 1):
+def evaluate_task(task_id: str, num_formats: int = 30, samples_per_format: int = 30):
     """Evaluate multiple formats on a task."""
     logger = setup_logging(task_id)
     logger.info(f"Starting evaluation of task {task_id}")
@@ -132,16 +140,17 @@ def evaluate_task(task_id: str, num_formats: int = 10, samples_per_format: int =
 
     task_data = load_task(task_id)
     logger.info(f"Loaded task data with {len(task_data['Instances'])} instances")
+    definition = task_data.get("Definition", ["No definition"])[0]
     instances = task_data["Instances"]
 
-    logger.info(f"Task Definition: {task_data.get('Definition', ['No definition'])[0]}")
+    logger.info(f"Task Definition: {definition}")
 
     results = []
     for format_idx in range(num_formats):
         logger.info(f"\nEvaluating format {format_idx + 1}/{num_formats}")
         format_params = sample_format_params()
         accuracy = evaluate_format(
-            task_id, instances, format_params, samples_per_format
+            task_id, definition, instances, format_params, samples_per_format
         )
 
         format_result = {
@@ -191,7 +200,8 @@ def evaluate_task(task_id: str, num_formats: int = 10, samples_per_format: int =
 
 
 def main():
-    tasks = ["069"]
+    # tasks = ["069", "070", "1297"]
+    tasks = ["070"]
 
     all_results = {}
     for task_id in tasks:

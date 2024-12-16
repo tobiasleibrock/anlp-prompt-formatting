@@ -22,24 +22,83 @@ def to_lower_roman(num):
     return to_roman(num).lower()
 
 
+# Casing functions
+def no_change(x):
+    return x
+
+
+def to_title(x):
+    return x.title()
+
+
+def to_upper(x):
+    return x.upper()
+
+
+def to_lower(x):
+    return x.lower()
+
+
+# Item formatting functions - Type 1
+def parentheses(x):
+    return f"({x})"
+
+
+def dot_suffix(x):
+    return f"{x}."
+
+
+def paren_suffix(x):
+    return f"{x})"
+
+
+def paren_space_suffix(x):
+    return f"{x} )"
+
+
+def square_brackets(x):
+    return f"[{x}]"
+
+
+def angle_brackets(x):
+    return f"<{x}>"
+
+
+# Item formatting functions - Type 2
+def increment(x):
+    return x + 1
+
+
+def prefix_upper_a(x):
+    return f"A{x}"
+
+
+def prefix_lower_a(x):
+    return f"a{x}"
+
+
+def to_unicode_fraction(x):
+    return f"{0x215F + x}"
+
+
 # Format classes
 S1 = ["", " ", "\n", " -- ", "; \n", " || ", "< sep >", " - ", "\n "]
 S2 = ["", " ", "  ", "\t"]  # No space, single, double, tab
 C = ["", " ::: ", " :: ", " : ", "\n\t", "\n ", ": ", " - ", "\t"]
-Fcasing = [lambda x: x, lambda x: x.title(), lambda x: x.upper(), lambda x: x.lower()]
+Fcasing = [no_change, to_title, to_upper, to_lower]
 Fitem1 = [
-    lambda x: f"({x})",
-    lambda x: f"{x}.",
-    lambda x: f"{x})",
-    lambda x: f"{x} )",
-    lambda x: f"[{x}]",
-    lambda x: f"<{x}>",
+    parentheses,
+    dot_suffix,
+    paren_suffix,
+    paren_space_suffix,
+    square_brackets,
+    angle_brackets,
 ]
 Fitem2 = [
-    lambda x: x + 1,
-    lambda x: f"A{x}",
-    lambda x: f"a{x}",
-    lambda x: f"{0x215F + x}",
+    increment,
+    prefix_upper_a,
+    prefix_lower_a,
+    to_unicode_fraction,
     to_roman,
     to_lower_roman,
 ]
