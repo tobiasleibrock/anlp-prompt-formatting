@@ -1,6 +1,7 @@
 import torch
 from transformers import BertTokenizer, BertForMaskedLM
 from sentence_transformers import SentenceTransformer, util
+import itertools
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertForMaskedLM.from_pretrained('bert-base-uncased')
@@ -25,23 +26,33 @@ def semantic_similarity(original, rephrased):
     embeddings = semantic_model.encode([original, rephrased], convert_to_tensor=True)
     return util.cos_sim(embeddings[0], embeddings[1]).item()
 
-
-def rephrase(prompt, target_word, top_k=5):
+def rephrase(prompt, target_words, top_k=5, similarity_threshold=0.95):
     results = []
+    
+    # Generate synonyms for each target word
+    synonyms_list = [
+        generate_synonyms(prompt, target_word.lower(), top_k) 
+        for target_word in target_words
+    ]
 
-    synonyms = generate_synonyms(prompt, target_word.lower(), top_k)
-    for synonym in synonyms:
-        rephrased_prompt = prompt.replace(target_word, synonym)
+    # Generate all combinations of synonyms (Cartesian product)
+    for synonym_combination in itertools.product(*synonyms_list):
+        rephrased_prompt = prompt
+        for target_word, synonym in zip(target_words, synonym_combination):
+            rephrased_prompt = rephrased_prompt.replace(target_word, synonym)
+
+        # Check semantic similarity
         similarity = semantic_similarity(prompt, rephrased_prompt)
 
         # Reject prompts that are semantically dissimilar
-        if similarity < 0.90:
+        if similarity < similarity_threshold:
             continue
 
         results.append({
             "prompt": prompt,
             "rephrased_prompt": rephrased_prompt,
-            "synonym": synonym,
+            "target_words": target_words,
+            "synonyms": synonym_combination,
             "similarity": similarity
         })
 
