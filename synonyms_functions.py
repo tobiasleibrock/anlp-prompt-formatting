@@ -84,7 +84,7 @@ def load_progress_from_json(filename):
     except FileNotFoundError:
         return {}
 
-def temp(client, fname, tasks, target_words, Fcasing, S1, Fitem2, Fitem1, tasks_path="natural-instructions/tasks/"):
+def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, Fitem2, Fitem1, tasks_path="natural-instructions/tasks/"):
     # Load previous progress if available
     fname = "word_synonym_performance.json"
     loaded_data = load_progress_from_json(fname)
@@ -102,7 +102,7 @@ def temp(client, fname, tasks, target_words, Fcasing, S1, Fitem2, Fitem1, tasks_
         template = PromptTemplate(model_instructions=data["Definition"][0], 
                                 task="", 
                                 fields=" ", 
-                                demonstrations=data["Positive Examples"][0] + data["Negative Examples"][0], 
+                                demonstrations = [data["Positive Examples"][0], data["Negative Examples"][0]], 
                                 separator=": ", 
                                 word_separator=" ", 
                                 casing=Fcasing[0], 
