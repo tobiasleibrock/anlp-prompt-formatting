@@ -4,9 +4,11 @@ Command-line interface for the reformat package.
 
 import argparse
 import sys
+import os.path
 from typing import Optional
 from .reformatter import PromptReformatter
 from .models import get_model_rules
+from synonym_rules import apply_synonym_rules
 
 
 def parse_args() -> argparse.Namespace:
@@ -95,6 +97,13 @@ def main() -> None:
 
     # Format the prompt
     formatted_prompt = reformatter.format(prompt)
+
+    # Apply synonym rules
+    model_name = args.model.replace(".", "_")
+    synonym_rules_path = f"models/{model_name}_synonym_rules.json"
+    
+    if os.path.exists(synonym_rules_path):
+        formatted_prompt = apply_synonym_rules(formatted_prompt, synonym_rules_path, 0.99)
 
     # Handle verbose output
     if args.verbose:
