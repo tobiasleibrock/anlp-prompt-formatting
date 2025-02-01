@@ -22,7 +22,8 @@ def generate_synonyms(text, target_word, top_k=5):
         mask_token_logits = logits[0, mask_index]
         top_tokens = torch.topk(mask_token_logits, top_k).indices.tolist()
 
-    return [tokenizer.decode([token]).strip() for token in top_tokens]
+    # return the top-k tokens as a list of strings exept for the target word
+    return [tokenizer.decode([token]).strip() for token in top_tokens if tokenizer.decode([token]).strip() != target_word]
 
 
 def semantic_similarity(original, rephrased):
@@ -84,9 +85,8 @@ def load_progress_from_json(filename):
     except FileNotFoundError:
         return {}
 
-def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, Fitem2, Fitem1, tasks_path="natural-instructions/tasks/"):
+def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, Fitem2, Fitem1, top_k=3, tasks_path="natural-instructions/tasks/", from_instance=0, to_instance=-1, save_every_n=10):
     # Load previous progress if available
-    fname = "word_synonym_performance.json"
     loaded_data = load_progress_from_json(fname)
 
     # Dictionary to store scores for each word-synonym pair
@@ -111,9 +111,12 @@ def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, F
                                 enumerator_format=Fitem1[0]
                                 )
         formatted_prompt = template.construct_prompt()
-        modified_templates = rephrase(prompt=formatted_prompt, target_words=target_words, top_k=3, similarity_threshold=0.8)
+        modified_templates = rephrase(prompt=formatted_prompt, target_words=target_words, top_k=top_k, similarity_threshold=0.8)
+        
+        if to_instance == -1:
+            to_instance = len(data["Instances"])
 
-        for i in range(len(data["Instances"])):  # Iterate over all instances
+        for i in range(from_instance, to_instance):  # Iterate over instances
             input = data["Instances"][i]["input"]
             output = data["Instances"][i]["output"][0]
 
@@ -125,6 +128,7 @@ def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, F
             response = client.chat.completions.create(model=model, messages=messages, temperature=0.75)
             original_agreement = output == response.choices[0].message.content
 
+            # Update the performance tracking for the original prompt
             key = (target_words[0], target_words[0])
             word_synonym_performance[key]["total"] += 1
             if original_agreement:
@@ -149,43 +153,56 @@ def synonym_evaluation(client, model, fname, tasks, target_words, Fcasing, S1, F
                     if agreement:
                         word_synonym_performance[key]["correct"] += 1
 
-            # Save progress every 100 instances
-            if (i + 1) % 100 == 0:
+            # Save progress every n instances
+            if (i + 1) % save_every_n == 0:
                 print(f"Saving progress after {i + 1} instances...")
                 save_progress_to_json(fname, word_synonym_performance)
 
     # Save the final performance scores
     save_progress_to_json(fname, word_synonym_performance)
 
-def augment_text_with_synonyms(input_text, json_path, similarity_threshold=0.95):
+def apply_synonym_rules(input_text, json_path, similarity_threshold=0.95):
 
     # Load performance data from JSON
     with open(json_path, "r") as f:
-        performance_data = json.load(f)
+        synonyms_data = json.load(f)
+
+    # Build a reverse lookup dictionary mapping each synonym to its category (original key)
+    synonym_to_category = {}
+    for category, synonyms in synonyms_data.items():
+        for synonym in synonyms.keys():
+            synonym_to_category[synonym] = category
 
     words = input_text.split()  # Split the input text into words
     augmented_text = words[:]   # Create a copy of the text to modify
 
     for idx, word in enumerate(words):
-        if word in performance_data:  # Check if the word is in the JSON file
-            synonyms = performance_data[word]
-            
-            # Collect synonyms that performed better than the original word
-            better_synonyms = []
-            for synonym, stats in synonyms.items():
-                if synonym != word and stats["correct"] > synonyms[word]["correct"]:
-                    better_synonyms.append((synonym, stats["correct"]))
+        # Identify the category for this word
+        if word in synonyms_data:
+            category = word  # The word is an original key
+        elif word in synonym_to_category:
+            category = synonym_to_category[word]  # The word is a synonym
+        else:
+            continue  # Word is not in the JSON, move to the next word
 
-            # Sort better synonyms by performance (highest to lowest)
-            better_synonyms.sort(key=lambda x: x[1], reverse=True)
+        synonyms = synonyms_data[category]  # Get all words in the category
 
-            for synonym, _ in better_synonyms:
-                # Replace the word with the synonym
-                temp_text = " ".join(augmented_text[:idx] + [synonym] + augmented_text[idx+1:])
+        # Collect better-performing synonyms
+        better_synonyms = []
+        for synonym, stats in synonyms.items():
+            if synonym != word and (stats["correct"] / stats["total"]) > (synonyms[word]["correct"] / synonyms[word]["total"]):
+                better_synonyms.append((synonym, (stats["correct"] / stats["total"])))
 
-                # Check semantic similarity
-                if semantic_similarity(" ".join(words), temp_text) >= similarity_threshold:
-                    augmented_text[idx] = synonym
-                    break  # Stop once a valid synonym is found
+        # Sort synonyms by performance (highest to lowest)
+        better_synonyms.sort(key=lambda x: x[1], reverse=True)
+
+        for synonym, _ in better_synonyms:
+            # Replace the word with the synonym
+            temp_text = " ".join(augmented_text[:idx] + [synonym] + augmented_text[idx+1:])
+
+            # Check semantic similarity
+            if semantic_similarity(" ".join(words), temp_text) >= similarity_threshold:
+                augmented_text[idx] = synonym
+                break  # Stop once a valid synonym is found
 
     return " ".join(augmented_text)
