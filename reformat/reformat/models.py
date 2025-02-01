@@ -104,8 +104,8 @@ def get_model_rules(model: str) -> Dict[str, List[Any]]:
         "general": get_general_rules,
         "gpt-4o": get_gpt4o_rules,
         "gpt-4o-mini": get_gpt4o_mini_rules,
-        "llama-3.1-70b-versatile": get_llama_70b_rules,
-        "llama-3.1-8b-instant": get_llama_8b_rules,
+        "llama-3.3-70b-versatile": get_llama_70b_rules,
+        "llama-3.3-8b-instant": get_llama_8b_rules,
         "mixtral-8x7b-32768": get_mixtral_rules,
         "gemma2-9b-it": get_gemma_rules,
     }
