@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "reformat"
 version = "0.1.0"
-description = "A package for intelligent prompt reformatting using expert rules"
+description = "A package for intelligent prompt reformatting using expert rules or LLM improvements"
 readme = "README.md"
 authors = [
     { name = "Tobias Leibrock", email = "mail.tobias.leibrock@gmail.com" },
@@ -18,10 +18,6 @@ classifiers = [
 ]
 requires-python = ">=3.10"
 dependencies = ["typing", "dataclasses"]
-
-[project.urls]
-Homepage = "https://github.com/tobiasleibrock/anlp-prompt-formatting"
-Repository = "https://github.com/tobiasleibrock/anlp-prompt-formatting.git"
 
 [project.scripts]
 reformat = "reformat.cli:main"
