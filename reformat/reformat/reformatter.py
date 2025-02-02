@@ -2,6 +2,7 @@
 Main reformatter class for applying expert rules to prompts.
 """
 
+import os
 from typing import List, Dict, Any, Optional, Union, Tuple
 from dataclasses import dataclass, field
 from .rules import (
@@ -11,6 +12,7 @@ from .rules import (
     EnumerationRule,
 )
 from .templates import PromptTemplate, DEFAULT_TEMPLATES, Example
+from .synonym_rules import apply_synonym_rules
 
 
 @dataclass
@@ -20,6 +22,7 @@ class PromptReformatter:
     item_formatting_rules: List[ItemFormattingRule] = field(default_factory=list)
     enumeration_rules: List[EnumerationRule] = field(default_factory=list)
     template: Optional[PromptTemplate] = None
+    model_name: str = "general"
 
     def __post_init__(self):
         if not self.separator_rules:
@@ -90,6 +93,14 @@ class PromptReformatter:
 
         # Format the prompt with all rules
         formatted_prompt = self.template.format(field_values)
+
+        # Apply synonym rules if available
+        model_name = self.model_name.replace(".", "_")
+        synonym_rules_path = f"models/{model_name}_synonym_rules.json"
+        if os.path.exists(synonym_rules_path):
+            formatted_prompt = apply_synonym_rules(
+                formatted_prompt, synonym_rules_path, 0.99
+            )
 
         # Get formatting summary
         formatting_summary = self.get_formatting_summary()

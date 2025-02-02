@@ -10,7 +10,7 @@ from typing import Optional, List, Dict, Any
 from .reformatter import PromptReformatter
 from .models import get_model_rules
 from .improver import PromptImprover
-from synonym_rules import apply_synonym_rules
+from .synonym_rules import apply_synonym_rules
 from .templates import DEFAULT_TEMPLATES, Example, PromptTemplate
 
 
@@ -140,7 +140,7 @@ def parse_args() -> argparse.Namespace:
             "gpt-4o",
             "gpt-4o-mini",
             "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
+            "llama-3.3-8b-instant",
             "mixtral-8x7b-32768",
             "gemma2-9b-it",
         ],
@@ -222,77 +222,63 @@ def format_command(args: argparse.Namespace) -> None:
     rules = get_model_rules(args.model)
 
     # Create reformatter with model-specific rules and template
-    reformatter = PromptReformatter(**rules)
+    reformatter = PromptReformatter(**rules, model_name=args.model)
     reformatter.set_template(args.template)
     template = reformatter.template
 
     # Get field values interactively
     field_values = get_field_values(template)
 
-    # Apply synonym rules
-    model_name = args.model.replace(".", "_")
-    synonym_rules_path = f"models/{model_name}_synonym_rules.json"
+    # Format the prompt
+    original_prompt, formatted_prompt, formatting_summary = reformatter.format(
+        field_values
+    )
 
-    try:
-        # Format the prompt
-        original_prompt, formatted_prompt, formatting_summary = reformatter.format(
-            field_values
+    # Print formatting information
+    print("\nOriginal Prompt:")
+    print("=" * 40)
+    print(original_prompt)
+
+    print("\nFormatted Prompt:")
+    print("=" * 40)
+    print(formatted_prompt)
+
+    print("\nFormatting Rules Used:")
+    print("=" * 40)
+    for rule_type, rule_name in formatting_summary.items():
+        print(f"{rule_type}: {rule_name}")
+
+    # Handle verbose output
+    if args.verbose:
+        print("\nTemplate Information:", file=sys.stderr)
+        print(f"Model: {args.model}", file=sys.stderr)
+        print(f"Template: {args.template}", file=sys.stderr)
+        print("Template fields:", file=sys.stderr)
+        print(f"  Required: {template.required_fields}", file=sys.stderr)
+        print(
+            f"  Optional: {[f for f in template.fields if f not in template.required_fields]}",
+            file=sys.stderr,
         )
+        print("Provided fields:", file=sys.stderr)
+        for field, value in field_values.items():
+            if isinstance(value, list):
+                print(f"  {field}: {len(value)} items", file=sys.stderr)
+            else:
+                print(f"  {field}: {len(str(value))} chars", file=sys.stderr)
 
-        if os.path.exists(synonym_rules_path):
-            formatted_prompt = apply_synonym_rules(
-                formatted_prompt, synonym_rules_path, 0.99
-            )
-
-        # Print formatting information
-        print("\nOriginal Prompt:")
-        print("=" * 40)
-        print(original_prompt)
-
-        print("\nFormatted Prompt:")
-        print("=" * 40)
-        print(formatted_prompt)
-
-        print("\nFormatting Rules Used:")
-        print("=" * 40)
-        for rule_type, rule_name in formatting_summary.items():
-            print(f"{rule_type}: {rule_name}")
-
-        # Handle verbose output
-        if args.verbose:
-            print("\nTemplate Information:", file=sys.stderr)
-            print(f"Model: {args.model}", file=sys.stderr)
-            print(f"Template: {args.template}", file=sys.stderr)
-            print("Template fields:", file=sys.stderr)
-            print(f"  Required: {template.required_fields}", file=sys.stderr)
-            print(
-                f"  Optional: {[f for f in template.fields if f not in template.required_fields]}",
-                file=sys.stderr,
-            )
-            print("Provided fields:", file=sys.stderr)
-            for field, value in field_values.items():
-                if isinstance(value, list):
-                    print(f"  {field}: {len(value)} items", file=sys.stderr)
-                else:
-                    print(f"  {field}: {len(str(value))} chars", file=sys.stderr)
-
-        # Write to output file if specified
-        if args.output:
-            with open(args.output, "w") as f:
-                f.write("Original Prompt:\n")
-                f.write("=" * 40 + "\n")
-                f.write(original_prompt + "\n\n")
-                f.write("Formatted Prompt:\n")
-                f.write("=" * 40 + "\n")
-                f.write(formatted_prompt + "\n\n")
-                f.write("Formatting Rules Used:\n")
-                f.write("=" * 40 + "\n")
-                for rule_type, rule_name in formatting_summary.items():
-                    f.write(f"{rule_type}: {rule_name}\n")
-
-    except ValueError as e:
-        print(f"Error: {e}", file=sys.stderr)
-        sys.exit(1)
+    # Write to output file if specified
+    if args.output:
+        with open(args.output, "w") as f:
+            f.write("Original Prompt:\n")
+            f.write("=" * 40 + "\n")
+            f.write(original_prompt + "\n\n")
+            f.write("Formatted Prompt:\n")
+            f.write("=" * 40 + "\n")
+            f.write(formatted_prompt + "\n\n")
+            f.write("Formatting Rules Used:\n")
+            f.write("=" * 40 + "\n")
+            for rule_type, rule_name in formatting_summary.items():
+                f.write(f"{rule_type}: {rule_name}\n")
 
 
 def improve_command(args: argparse.Namespace) -> None:

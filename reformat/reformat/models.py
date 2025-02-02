@@ -36,22 +36,19 @@ def get_gpt4o_mini_rules() -> Dict[str, List[Any]]:
 def get_llama_70b_rules() -> Dict[str, List[Any]]:
     """
     Get formatting rules optimized for Llama-3 70B Versatile model.
-
-    Best rules found:
-    - Separator: newline
-    - Casing: uppercase
-    - Item formatting: parentheses
-    - Enumeration: roman numerals
+    Experimental evaluation found spread of 0.10
     """
     return {
-        "separator_rules": [SeparatorRule("Newline", "Single newline", "\n")],
-        "casing_rules": [CasingRule("Upper", "Use uppercase")],
+        "separator_rules": [
+            SeparatorRule("Double Pipe", "Double pipe with spaces", " || ")
+        ],
+        "casing_rules": [CasingRule("No Change", "Keep original casing")],
         "item_formatting_rules": [
             ItemFormattingRule("Parentheses", "Use parentheses", "({})")
         ],
         "enumeration_rules": [
             EnumerationRule(
-                "Roman Upper", "Use uppercase roman numerals", "roman_upper"
+                "Unicode Fractions", "Use unicode fractions", "unicode_fraction"
             )
         ],
     }
@@ -60,13 +57,20 @@ def get_llama_70b_rules() -> Dict[str, List[Any]]:
 def get_llama_8b_rules() -> Dict[str, List[Any]]:
     """
     Get formatting rules optimized for Llama3 8B model.
+    Experimental evaluation found spread of 0.15
     """
 
     return {
-        "separator_rules": SeparatorRule.get_default_rules(),
-        "casing_rules": [CasingRule("upper", "Uppercase")],
-        "item_formatting_rules": ItemFormattingRule.get_default_rules(),
-        "enumeration_rules": EnumerationRule.get_default_rules(),
+        "separator_rules": [
+            SeparatorRule("Newline Space", "Newline followed by space", "\n ")
+        ],
+        "casing_rules": [CasingRule("Upper", "Use uppercase")],
+        "item_formatting_rules": [
+            ItemFormattingRule("Dot Suffix", "Add dot at the end", "{}.")
+        ],
+        "enumeration_rules": [
+            EnumerationRule("Roman", "Use roman numerals", "roman_upper")
+        ],
     }
 
 
@@ -85,13 +89,20 @@ def get_mixtral_rules() -> Dict[str, List[Any]]:
 def get_gemma_rules() -> Dict[str, List[Any]]:
     """
     Get formatting rules optimized for Gemma 2 9B model.
+    Experimental evaluation found spread of 0.12
     """
 
     return {
-        "separator_rules": SeparatorRule.get_default_rules(),
-        "casing_rules": CasingRule.get_default_rules(),
-        "item_formatting_rules": ItemFormattingRule.get_default_rules(),
-        "enumeration_rules": EnumerationRule.get_default_rules(),
+        "separator_rules": [
+            SeparatorRule("Newline", "Newline followed by space", "\n ")
+        ],
+        "casing_rules": [CasingRule("No Change", "Keep original casing")],
+        "item_formatting_rules": [
+            ItemFormattingRule("Brackets", "Use square brackets", "[{}]")
+        ],
+        "enumeration_rules": [
+            EnumerationRule("Alpha Lower", "Use lowercase letters", "alpha_lower")
+        ],
     }
 
 

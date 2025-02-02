@@ -1,6 +1,6 @@
 import json
 import glob
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Callable
 from formatters import (
     S1,
     S2,
@@ -115,9 +115,63 @@ def format_qasc_task(
     )
 
 
-def get_task_formatter(task_id: str):
-    """Get the appropriate formatter function for a task."""
-    if task_id in ["069", "070"]:
+def format_answerability_task(
+    instance: Dict[str, Any],
+    separator: str,
+    space: str,
+    casing: callable,
+    field_separator: str,
+    item_formatter: callable,
+    enumerator_format: callable,
+) -> str:
+    """Format an answerability classification task (050)."""
+    input_text = instance["input"]
+
+    # Split into sentence and question
+    parts = input_text.split("Question:")
+    sentence = parts[0].replace("Sentence:", "").strip()
+    question = parts[1].strip()
+
+    # Format fields
+    formatted_sentence = format_field("Sentence", separator, casing, sentence)
+    formatted_question = format_field("Question", separator, casing, question)
+    formatted_answer = format_field("Answer", separator, casing, "")
+
+    # Join with field separator and apply spacing
+    return format_prompt(
+        [formatted_sentence, formatted_question, formatted_answer],
+        field_separator,
+        space,
+    )
+
+
+def format_timetravel_task(task_input: str) -> str:
+    """Format a time travel consistency task input."""
+    # Split on newlines and clean up
+    sentences = [s.strip() for s in task_input.split("\n") if s.strip()]
+
+    # Format each sentence, preserving the sentence numbers
+    formatted_sentences = []
+    for sentence in sentences:
+        if sentence.startswith("Sentence "):
+            num = sentence[8]  # Get the number after "Sentence "
+            text = sentence[sentence.find(":") + 1 :].strip()
+            formatted_sentences.append(f"Sentence {num}: {text}")
+        elif sentence.startswith("Option "):
+            formatted_sentences.append(sentence.strip())
+
+    # Join with newlines
+    formatted_input = "\n".join(formatted_sentences)
+    return f"{formatted_input}\nAnswer:"
+
+
+def get_task_formatter(task_id: str) -> Callable[[str], str]:
+    """Get the appropriate formatter function for a given task ID."""
+    if task_id == "050":
+        return format_answerability_task
+    elif task_id == "065":
+        return format_timetravel_task
+    elif task_id in ["069", "070"]:
         return format_abductive_task
     elif task_id == "1297":
         return format_qasc_task
