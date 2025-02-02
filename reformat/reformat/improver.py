@@ -1,7 +1,11 @@
+"""
+Improver module for finding optimal formatting using LLM evaluation.
+"""
+
 import random
 import logging
 import os
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass
 import aisuite as ai
 from dotenv import load_dotenv
@@ -13,9 +17,13 @@ from .rules import (
     EnumerationRule,
 )
 from .reformatter import PromptReformatter
+from .templates import Example
 
+# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+# Disable httpx logs
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 load_dotenv()
 
@@ -30,6 +38,8 @@ class FormatResult:
 
 @dataclass
 class FormatCandidate:
+    """A candidate set of formatting rules."""
+
     separator_rule: SeparatorRule
     casing_rule: CasingRule
     item_formatting_rule: ItemFormattingRule
@@ -121,6 +131,7 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
             return 0.0
 
     def sample_candidate(self) -> FormatCandidate:
+        """Sample a random set of formatting rules."""
         return FormatCandidate(
             separator_rule=random.choice(SeparatorRule.get_default_rules()),
             casing_rule=random.choice(CasingRule.get_default_rules()),
@@ -128,66 +139,91 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
             enumeration_rule=random.choice(EnumerationRule.get_default_rules()),
         )
 
-    def format_prompt(self, prompt: str, candidate: FormatCandidate) -> str:
+    def format_prompt(
+        self, field_values: Dict[str, Any], candidate: FormatCandidate
+    ) -> str:
+        """Format the prompt using the candidate's rules."""
         reformatter = PromptReformatter(
             separator_rules=[candidate.separator_rule],
             casing_rules=[candidate.casing_rule],
             item_formatting_rules=[candidate.item_formatting_rule],
             enumeration_rules=[candidate.enumeration_rule],
         )
-        return reformatter.format(prompt)
+        _, formatted_prompt, _ = reformatter.format(field_values)
+        return formatted_prompt
 
-    # use random search to improve prompt format
     def improve(
         self,
-        prompt: str,
+        field_values: Dict[str, Any],
         num_candidates: int = 10,
         num_iterations: int = 3,
-        temperature: float = 0.1,
     ) -> Dict[str, Any]:
-        original_response = self.get_model_response(prompt)
+        """Improve prompt format through random search.
 
-        best_result: Optional[FormatResult] = None
+        Args:
+            field_values: Dictionary of template field values
+            num_candidates: Number of format candidates to try per iteration
+            num_iterations: Number of search iterations
+        """
+        # Create reformatter for original prompt
+        reformatter = PromptReformatter()
+        # Set template based on fields present
+        if "Question" in field_values and "Options" in field_values:
+            reformatter.set_template("multiple_choice")
+            # For multiple choice, we don't need Input field
+            if "Input" not in field_values:
+                field_values["Input"] = ""  # Add empty Input field
+        else:
+            reformatter.set_template("general")
+
+        original_prompt, _, _ = reformatter.format(field_values)
+        original_response = self.get_model_response(original_prompt)
+
+        best_candidate: Optional[FormatCandidate] = None
         best_score = float("-inf")
-        all_results: List[FormatResult] = []
+        best_response = original_response
+        all_candidates: List[FormatCandidate] = []
 
         for iteration in range(num_iterations):
             logger.info(f"Starting iteration {iteration + 1}/{num_iterations}")
 
             for _ in range(num_candidates):
+                # Sample a new candidate
                 candidate = self.sample_candidate()
 
-                # format the prompt
-                formatted_prompt = self.format_prompt(prompt, candidate)
+                # Format the prompt with candidate rules
+                formatted_prompt = self.format_prompt(field_values, candidate)
 
-                # get model response
+                # Get model response
                 model_response = self.get_model_response(formatted_prompt)
 
-                # evaluate the response quality
-                score = self.evaluate_format(prompt, original_response, model_response)
-                candidate.score = score
-
-                # create result object
-                result = FormatResult(
-                    format=candidate,
-                    formatted_prompt=formatted_prompt,
-                    model_response=model_response,
-                    score=score,
+                # Evaluate the response quality
+                score = self.evaluate_format(
+                    original_prompt, original_response, model_response
                 )
-                all_results.append(result)
+                candidate.score = score
+                all_candidates.append(candidate)
 
                 if score > best_score:
                     best_score = score
-                    best_result = result
+                    best_candidate = candidate
+                    best_response = model_response
                     logger.info(f"New best score: {best_score:.3f}")
 
+        # Format the prompt with the best rules found
+        best_formatted_prompt = (
+            self.format_prompt(field_values, best_candidate)
+            if best_candidate
+            else original_prompt
+        )
+
         return {
-            "original_prompt": prompt,
+            "original_prompt": original_prompt,
+            "improved_prompt": best_formatted_prompt,
             "original_response": original_response,
-            "improved_prompt": best_result.formatted_prompt,
-            "improved_response": best_result.model_response,
+            "improved_response": best_response,
             "improvement_score": best_score,
-            "best_format": best_result.format.to_dict(),
-            "num_candidates_evaluated": len(all_results),
-            "all_scores": [r.score for r in all_results],
+            "best_format": best_candidate.to_dict() if best_candidate else None,
+            "num_candidates_evaluated": len(all_candidates),
+            "all_scores": [c.score for c in all_candidates],
         }

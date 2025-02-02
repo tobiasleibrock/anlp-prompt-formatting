@@ -36,13 +36,24 @@ def get_gpt4o_mini_rules() -> Dict[str, List[Any]]:
 def get_llama_70b_rules() -> Dict[str, List[Any]]:
     """
     Get formatting rules optimized for Llama-3 70B Versatile model.
-    """
 
+    Best rules found:
+    - Separator: newline
+    - Casing: uppercase
+    - Item formatting: parentheses
+    - Enumeration: roman numerals
+    """
     return {
-        "separator_rules": SeparatorRule.get_default_rules(),
-        "casing_rules": CasingRule.get_default_rules(),
-        "item_formatting_rules": ItemFormattingRule.get_default_rules(),
-        "enumeration_rules": EnumerationRule.get_default_rules(),
+        "separator_rules": [SeparatorRule("Newline", "Single newline", "\n")],
+        "casing_rules": [CasingRule("Upper", "Use uppercase")],
+        "item_formatting_rules": [
+            ItemFormattingRule("Parentheses", "Use parentheses", "({})")
+        ],
+        "enumeration_rules": [
+            EnumerationRule(
+                "Roman Upper", "Use uppercase roman numerals", "roman_upper"
+            )
+        ],
     }
 
 
