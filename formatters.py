@@ -1,7 +1,5 @@
 # formats from paper "How I learned to start worrying about prompt formatting"
 
-
-# Utility for Roman numeral conversion
 def to_roman(num):
     roman_dict = {
         1: "I",
@@ -83,7 +81,7 @@ def to_unicode_fraction(x):
 
 # Format classes
 S1 = ["", " ", "\n", " -- ", "; \n", " || ", "< sep >", " - ", "\n "]
-S2 = ["", " ", "  ", "\t"]  # No space, single, double, tab
+S2 = ["", " ", "  ", "\t"]
 C = ["", " ::: ", " :: ", " : ", "\n\t", "\n ", ": ", " - ", "\t"]
 Fcasing = [no_change, to_title, to_upper, to_lower]
 Fitem1 = [
@@ -104,26 +102,16 @@ Fitem2 = [
 ]
 
 
-# Prompt formatting functions
 def format_field(descriptor, separator, casing, value):
-    """
-    Formats a single field with a descriptor, separator, casing, and placeholder value.
-    """
     descriptor = casing(descriptor)
     return f"{descriptor}{separator}{value}"
 
 
 def format_prompt(fields, field_separator, space):
-    """
-    Combines multiple formatted fields with a given separator and spacing.
-    """
     return field_separator.join(fields).replace(" ", space)
 
 
 def format_enumeration(descriptor, items, separator, space, casing, item_formatter):
-    """
-    Formats enumerations (e.g., multiple-choice options) with specific formatting for items.
-    """
     formatted_items = [
         format_field(descriptor, separator, casing, item_formatter(i)) for i in items
     ]

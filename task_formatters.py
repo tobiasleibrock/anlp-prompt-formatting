@@ -1,13 +1,7 @@
 import json
 import glob
-from typing import List, Dict, Any, Tuple, Callable
+from typing import Dict, Any, Callable
 from formatters import (
-    S1,
-    S2,
-    C,
-    Fcasing,
-    Fitem1,
-    Fitem2,
     format_field,
     format_prompt,
     format_enumeration,
@@ -15,7 +9,6 @@ from formatters import (
 
 
 def load_task(task_id: str) -> Dict[str, Any]:
-    """Load a task from the natural-instructions dataset."""
     task_files = glob.glob(f"natural-instructions/tasks/task{task_id}_*.json")
     if not task_files:
         raise FileNotFoundError(f"No task file found for task ID {task_id}")
@@ -34,11 +27,9 @@ def format_abductive_task(
     item_formatter: callable,
     enumerator_format: callable,
 ) -> str:
-    """Format an abductive reasoning task (069, 070)."""
     input_text = instance["input"]
     parts = input_text.split("\\n") if "\\n" in input_text else input_text.split("\n")
 
-    # Extract fields from input
     fields = {
         "Beginning": "",
         "Middle 1": "",
@@ -53,13 +44,9 @@ def format_abductive_task(
                 fields[field] = part.split(f"{field}:", 1)[1].strip()
                 break
 
-    # Format all fields in sequence
     formatted = []
-
-    # Beginning
     formatted.append(format_field("Beginning", separator, casing, fields["Beginning"]))
 
-    # Middle 1 & 2
     for i in range(1, 3):
         middle_content = fields[f"Middle {i}"]
         formatted.append(
@@ -68,11 +55,9 @@ def format_abductive_task(
             )
         )
 
-    # Ending and Answer
     formatted.append(format_field("Ending", separator, casing, fields["Ending"]))
     formatted.append(format_field("Answer", separator, casing, ""))
 
-    # Join with field separator and apply spacing
     return format_prompt(formatted, field_separator, space)
 
 
@@ -85,7 +70,6 @@ def format_qasc_task(
     item_formatter: callable,
     enumerator_format: callable,
 ) -> str:
-    """Format a QASC question answering task (1297)."""
     input_text = instance["input"]
     parts = [p.strip() for p in input_text.split(",")]
 
@@ -124,20 +108,16 @@ def format_answerability_task(
     item_formatter: callable,
     enumerator_format: callable,
 ) -> str:
-    """Format an answerability classification task (050)."""
     input_text = instance["input"]
 
-    # Split into sentence and question
     parts = input_text.split("Question:")
     sentence = parts[0].replace("Sentence:", "").strip()
     question = parts[1].strip()
 
-    # Format fields
     formatted_sentence = format_field("Sentence", separator, casing, sentence)
     formatted_question = format_field("Question", separator, casing, question)
     formatted_answer = format_field("Answer", separator, casing, "")
 
-    # Join with field separator and apply spacing
     return format_prompt(
         [formatted_sentence, formatted_question, formatted_answer],
         field_separator,
@@ -146,27 +126,22 @@ def format_answerability_task(
 
 
 def format_timetravel_task(task_input: str) -> str:
-    """Format a time travel consistency task input."""
-    # Split on newlines and clean up
     sentences = [s.strip() for s in task_input.split("\n") if s.strip()]
 
-    # Format each sentence, preserving the sentence numbers
     formatted_sentences = []
     for sentence in sentences:
         if sentence.startswith("Sentence "):
-            num = sentence[8]  # Get the number after "Sentence "
+            num = sentence[8]
             text = sentence[sentence.find(":") + 1 :].strip()
             formatted_sentences.append(f"Sentence {num}: {text}")
         elif sentence.startswith("Option "):
             formatted_sentences.append(sentence.strip())
 
-    # Join with newlines
     formatted_input = "\n".join(formatted_sentences)
     return f"{formatted_input}\nAnswer:"
 
 
 def get_task_formatter(task_id: str) -> Callable[[str], str]:
-    """Get the appropriate formatter function for a given task ID."""
     if task_id == "050":
         return format_answerability_task
     elif task_id == "065":
