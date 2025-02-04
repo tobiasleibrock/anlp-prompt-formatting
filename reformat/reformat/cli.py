@@ -1,21 +1,13 @@
-"""
-Command-line interface for the reformat package.
-"""
-
 import argparse
 import sys
-import os.path
-import json
 from typing import Optional, List, Dict, Any
 from .reformatter import PromptReformatter
 from .models import get_model_rules
 from .improver import PromptImprover
-from .synonym_rules import apply_synonym_rules
 from .templates import DEFAULT_TEMPLATES, Example, PromptTemplate
 
 
 def get_multiline_input(prompt: str) -> str:
-    """Get multiline input from user. Empty line ends input."""
     print(f"{prompt} (Enter empty line to finish):")
     lines = []
     while True:
@@ -27,7 +19,6 @@ def get_multiline_input(prompt: str) -> str:
 
 
 def get_examples_input() -> List[Example]:
-    """Interactively get examples from user."""
     examples = []
     print("\nEnter examples (empty line to finish)")
 
@@ -57,7 +48,6 @@ def get_examples_input() -> List[Example]:
 
 
 def get_options_input() -> List[str]:
-    """Interactively get options from user."""
     options = []
     while True:
         print(f"\nEnter option {len(options) + 1} (or empty line to finish):")
@@ -66,7 +56,7 @@ def get_options_input() -> List[str]:
             break
         options.append(option)
 
-        if len(options) >= 2:  # Need at least 2 options
+        if len(options) >= 2:
             print("Add another option? (y/N)")
             if input().lower() != "y":
                 break
@@ -75,7 +65,6 @@ def get_options_input() -> List[str]:
 
 
 def get_field_values(template: PromptTemplate) -> Dict[str, Any]:
-    """Interactively get values for template fields."""
     field_values = {}
 
     print(f"\nTemplate: {template.name}")
@@ -111,14 +100,12 @@ def get_field_values(template: PromptTemplate) -> Dict[str, Any]:
 
 
 def parse_args() -> argparse.Namespace:
-    """Parse command line arguments."""
     parser = argparse.ArgumentParser(
         description="Reformat prompts using expert rules for different LLM models."
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Command to execute")
 
-    # Format command
     format_parser = subparsers.add_parser(
         "format", help="Format a prompt using expert rules"
     )
@@ -159,7 +146,6 @@ def parse_args() -> argparse.Namespace:
         help="Print additional information about applied rules",
     )
 
-    # Improve command
     improve_parser = subparsers.add_parser(
         "improve", help="Improve prompt format using LLM judge"
     )
@@ -208,7 +194,6 @@ def parse_args() -> argparse.Namespace:
 
 
 def write_output(text: str, output_file: Optional[str] = None) -> None:
-    """Write output to file or stdout."""
     if output_file:
         with open(output_file, "w") as f:
             f.write(text)
@@ -217,24 +202,18 @@ def write_output(text: str, output_file: Optional[str] = None) -> None:
 
 
 def format_command(args: argparse.Namespace) -> None:
-    """Handle the format command."""
-    # Get model-specific rules
     rules = get_model_rules(args.model)
 
-    # Create reformatter with model-specific rules and template
     reformatter = PromptReformatter(**rules, model_name=args.model)
     reformatter.set_template(args.template)
     template = reformatter.template
 
-    # Get field values interactively
     field_values = get_field_values(template)
 
-    # Format the prompt
     original_prompt, formatted_prompt, formatting_summary = reformatter.format(
         field_values
     )
 
-    # Print formatting information
     print("\nOriginal Prompt:")
     print("=" * 40)
     print(original_prompt)
@@ -248,7 +227,6 @@ def format_command(args: argparse.Namespace) -> None:
     for rule_type, rule_name in formatting_summary.items():
         print(f"{rule_type}: {rule_name}")
 
-    # Handle verbose output
     if args.verbose:
         print("\nTemplate Information:", file=sys.stderr)
         print(f"Model: {args.model}", file=sys.stderr)
@@ -266,7 +244,6 @@ def format_command(args: argparse.Namespace) -> None:
             else:
                 print(f"  {field}: {len(str(value))} chars", file=sys.stderr)
 
-    # Write to output file if specified
     if args.output:
         with open(args.output, "w") as f:
             f.write("Original Prompt:\n")
@@ -282,11 +259,8 @@ def format_command(args: argparse.Namespace) -> None:
 
 
 def improve_command(args: argparse.Namespace) -> None:
-    """Handle the improve command."""
-    # Create improver
     improver = PromptImprover(api_key=args.api_key)
 
-    # Get template and field values interactively
     reformatter = PromptReformatter()
     reformatter.set_template(args.template)  # Use the specified template
     field_values = get_field_values(reformatter.template)
@@ -296,14 +270,12 @@ def improve_command(args: argparse.Namespace) -> None:
         f"Running {args.iterations} iterations with {args.num_candidates} candidates each..."
     )
 
-    # Improve the prompt format
     result = improver.improve(
         field_values=field_values,
         num_candidates=args.num_candidates,
         num_iterations=args.iterations,
     )
 
-    # Print results
     print("\nOriginal Prompt:")
     print("=" * 40)
     print(result["original_prompt"])
@@ -330,7 +302,6 @@ def improve_command(args: argparse.Namespace) -> None:
 
     print(f"\nImprovement Score: {result['improvement_score']:.3f}")
 
-    # Handle verbose output
     if args.verbose:
         print("\nImprovement Details:", file=sys.stderr)
         print(
@@ -344,7 +315,6 @@ def improve_command(args: argparse.Namespace) -> None:
             print(f"  Max: {max(scores):.3f}", file=sys.stderr)
             print(f"  Avg: {sum(scores) / len(scores):.3f}", file=sys.stderr)
 
-    # Write to output file if specified
     if args.output:
         with open(args.output, "w") as f:
             f.write("Original Prompt:\n")
@@ -370,7 +340,6 @@ def improve_command(args: argparse.Namespace) -> None:
 
 
 def main() -> None:
-    """Main entry point for the CLI."""
     args = parse_args()
 
     if args.command == "format":

@@ -1,7 +1,3 @@
-"""
-Expert rules for prompt formatting.
-"""
-
 from abc import ABC, abstractmethod
 from typing import List
 from dataclasses import dataclass
@@ -33,7 +29,6 @@ class SeparatorRule(BaseRule):
     separator: str
 
     def apply(self, prompt: str) -> str:
-        # Apply separator between sections
         sections = prompt.split("\n")
         return self.separator.join(section.strip() for section in sections)
 
@@ -66,7 +61,6 @@ class CasingRule(BaseRule):
     """Rules for determining optimal casing in prompts."""
 
     def apply(self, prompt: str) -> str:
-        # Implement casing transformation
         if self.name == "Title":
             return prompt.title()
         elif self.name == "Lower":
@@ -92,8 +86,6 @@ class ItemFormattingRule(BaseRule):
     format_str: str
 
     def apply(self, prompt: str) -> str:
-        """This method is deprecated in favor of using format_str directly."""
-        # Apply formatting to enumerated items
         for i in range(1, 10):
             if str(i) in prompt:
                 prompt = prompt.replace(str(i), self.format_str.format(i))
@@ -120,8 +112,6 @@ class ItemFormattingRule(BaseRule):
 
 @dataclass
 class EnumerationRule(BaseRule):
-    """Rules for handling enumerations in prompts."""
-
     enum_format: str
 
     def apply(self, prompt: str) -> str:

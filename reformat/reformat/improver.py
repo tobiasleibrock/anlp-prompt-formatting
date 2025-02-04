@@ -1,11 +1,7 @@
-"""
-Improver module for finding optimal formatting using LLM evaluation.
-"""
-
 import random
 import logging
 import os
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 import aisuite as ai
 from dotenv import load_dotenv
@@ -17,12 +13,9 @@ from .rules import (
     EnumerationRule,
 )
 from .reformatter import PromptReformatter
-from .templates import Example
 
-# Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
-# Disable httpx logs
 logging.getLogger("httpx").setLevel(logging.WARNING)
 
 load_dotenv()
@@ -38,8 +31,6 @@ class FormatResult:
 
 @dataclass
 class FormatCandidate:
-    """A candidate set of formatting rules."""
-
     separator_rule: SeparatorRule
     casing_rule: CasingRule
     item_formatting_rule: ItemFormattingRule
@@ -71,7 +62,6 @@ class PromptImprover:
         self.judge_model = "groq:llama-3.3-70b-versatile"
 
     def get_model_response(self, formatted_prompt: str) -> str:
-        """Get response from the target model."""
         messages = [
             {"role": "system", "content": "You are a helpful AI assistant."},
             {"role": "user", "content": formatted_prompt},
@@ -131,7 +121,6 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
             return 0.0
 
     def sample_candidate(self) -> FormatCandidate:
-        """Sample a random set of formatting rules."""
         return FormatCandidate(
             separator_rule=random.choice(SeparatorRule.get_default_rules()),
             casing_rule=random.choice(CasingRule.get_default_rules()),
@@ -142,7 +131,6 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
     def format_prompt(
         self, field_values: Dict[str, Any], candidate: FormatCandidate
     ) -> str:
-        """Format the prompt using the candidate's rules."""
         reformatter = PromptReformatter(
             separator_rules=[candidate.separator_rule],
             casing_rules=[candidate.casing_rule],
@@ -158,21 +146,11 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
         num_candidates: int = 10,
         num_iterations: int = 3,
     ) -> Dict[str, Any]:
-        """Improve prompt format through random search.
-
-        Args:
-            field_values: Dictionary of template field values
-            num_candidates: Number of format candidates to try per iteration
-            num_iterations: Number of search iterations
-        """
-        # Create reformatter for original prompt
         reformatter = PromptReformatter()
-        # Set template based on fields present
         if "Question" in field_values and "Options" in field_values:
             reformatter.set_template("multiple_choice")
-            # For multiple choice, we don't need Input field
             if "Input" not in field_values:
-                field_values["Input"] = ""  # Add empty Input field
+                field_values["Input"] = ""
         else:
             reformatter.set_template("general")
 
@@ -188,16 +166,9 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
             logger.info(f"Starting iteration {iteration + 1}/{num_iterations}")
 
             for _ in range(num_candidates):
-                # Sample a new candidate
                 candidate = self.sample_candidate()
-
-                # Format the prompt with candidate rules
                 formatted_prompt = self.format_prompt(field_values, candidate)
-
-                # Get model response
                 model_response = self.get_model_response(formatted_prompt)
-
-                # Evaluate the response quality
                 score = self.evaluate_format(
                     original_prompt, original_response, model_response
                 )
@@ -210,7 +181,6 @@ Provide only the numerical score (e.g., 0.85) without any explanation."""
                     best_response = model_response
                     logger.info(f"New best score: {best_score:.3f}")
 
-        # Format the prompt with the best rules found
         best_formatted_prompt = (
             self.format_prompt(field_values, best_candidate)
             if best_candidate

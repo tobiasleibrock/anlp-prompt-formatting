@@ -1,7 +1,3 @@
-"""
-Main reformatter class for applying expert rules to prompts.
-"""
-
 import os
 from typing import List, Dict, Any, Optional, Union, Tuple
 from dataclasses import dataclass, field
@@ -11,7 +7,7 @@ from .rules import (
     ItemFormattingRule,
     EnumerationRule,
 )
-from .templates import PromptTemplate, DEFAULT_TEMPLATES, Example
+from .templates import PromptTemplate, DEFAULT_TEMPLATES
 from .synonym_rules import apply_synonym_rules
 
 
@@ -37,13 +33,11 @@ class PromptReformatter:
             self.template = DEFAULT_TEMPLATES["general"]
 
     def format_field_name(self, field_name: str) -> str:
-        """Format only the field name using casing rules."""
         if self.casing_rules:
             return self.casing_rules[0].apply(field_name)
         return field_name
 
     def format_number(self, number: int) -> str:
-        """Format a number using item formatting and enumeration rules."""
         num_str = str(number)
         if self.enumeration_rules:
             num_str = self.enumeration_rules[0].apply(num_str)
@@ -52,7 +46,6 @@ class PromptReformatter:
         return num_str
 
     def get_formatting_summary(self) -> Dict[str, str]:
-        """Get a summary of the formatting rules being used."""
         return {
             "separator": self.separator_rules[0].name
             if self.separator_rules
@@ -69,9 +62,6 @@ class PromptReformatter:
     def format(
         self, input_data: Union[str, Dict[str, Any]]
     ) -> Tuple[str, str, Dict[str, str]]:
-        """Format the prompt using the current template and rules.
-        Returns: (original_prompt, formatted_prompt, formatting_summary)
-        """
         # Store original input for later
         original_prompt = (
             input_data
@@ -79,10 +69,8 @@ class PromptReformatter:
             else self.template.format(input_data)
         )
 
-        # If input is a string, try to extract fields
         if isinstance(input_data, str):
             field_values = self.template.extract_fields(input_data)
-            # If no fields were extracted, treat the entire input as the first required field
             if not field_values and self.template.required_fields:
                 field_values = {self.template.required_fields[0]: input_data}
         else:
@@ -91,7 +79,6 @@ class PromptReformatter:
         # Pass the reformatter to the template so it can access the formatting rules
         self.template.reformatter = self
 
-        # Format the prompt with all rules
         formatted_prompt = self.template.format(field_values)
 
         # Apply synonym rules if available
@@ -102,7 +89,6 @@ class PromptReformatter:
                 formatted_prompt, synonym_rules_path, 0.99
             )
 
-        # Get formatting summary
         formatting_summary = self.get_formatting_summary()
 
         return original_prompt, formatted_prompt, formatting_summary
@@ -120,7 +106,6 @@ class PromptReformatter:
             raise ValueError(f"Unknown rule type: {rule_type}")
 
     def set_template(self, template_name: str) -> None:
-        """Set the template to use for formatting."""
         if template_name not in DEFAULT_TEMPLATES:
             raise ValueError(f"Unknown template: {template_name}")
         self.template = DEFAULT_TEMPLATES[template_name]

@@ -1,5 +1,5 @@
 """
-Reformat - A package for intelligent prompt reformatting using expert rules.
+Reformat - A package for intelligent prompt reformatting using expert rules or iterative improvements using LLMs as judges.
 """
 
 from .reformatter import PromptReformatter

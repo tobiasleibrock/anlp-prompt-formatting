@@ -1,15 +1,9 @@
-"""
-Template system for the reformat package.
-"""
-
 from dataclasses import dataclass
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 
 @dataclass
 class Example:
-    """Structure for input-output examples."""
-
     input: str
     output: str
 
@@ -19,8 +13,6 @@ class Example:
 
 @dataclass
 class PromptTemplate:
-    """Base class for prompt templates."""
-
     name: str
     description: str
     fields: List[str]
@@ -28,8 +20,6 @@ class PromptTemplate:
     separator: str = "\n\n"
 
     def format(self, field_values: Dict[str, Any]) -> str:
-        """Format the template with the given field values."""
-        # Validate required fields
         missing_fields = [f for f in self.required_fields if f not in field_values]
         if missing_fields:
             raise ValueError(f"Missing required fields: {missing_fields}")
@@ -48,7 +38,6 @@ class PromptTemplate:
                     field_separator = self.reformatter.separator_rules[0].separator
 
                 if field == "Examples" and isinstance(field_values[field], list):
-                    # Format examples specially
                     examples = field_values[field]
                     formatted_examples = []
                     for i, example in enumerate(examples, 1):
@@ -122,7 +111,7 @@ class PromptTemplate:
                         hasattr(self, "reformatter")
                         and self.reformatter.separator_rules
                     ):
-                        options_separator = " -- "  # Common separator in examples
+                        options_separator = " -- "
 
                     formatted_sections.append(
                         f"{formatted_field}{field_separator}"
@@ -137,7 +126,6 @@ class PromptTemplate:
         return "\n\n".join(formatted_sections)
 
     def extract_fields(self, text: str) -> Dict[str, Any]:
-        """Extract field values from text formatted with this template."""
         field_values = {}
         sections = text.split(self.separator)
 
@@ -147,7 +135,6 @@ class PromptTemplate:
                 if section.startswith(f"{field}:"):
                     value = section[len(f"{field}:") :].strip()
                     if field == "Examples":
-                        # Parse examples
                         examples = []
                         example_sections = value.split("\n\n")
                         for example_section in example_sections:
@@ -169,7 +156,6 @@ class PromptTemplate:
                         if examples:
                             field_values[field] = examples
                     elif field == "Options":
-                        # Parse options
                         options = []
                         for line in value.split("\n"):
                             if line.strip() and ". " in line:
@@ -183,7 +169,6 @@ class PromptTemplate:
         return field_values
 
 
-# Default templates
 GENERAL_TEMPLATE = PromptTemplate(
     name="general",
     description="A template for few-shot learning with task description and input-output examples",
@@ -198,7 +183,6 @@ MULTIPLE_CHOICE_TEMPLATE = PromptTemplate(
     required_fields=["Task", "Question", "Options"],
 )
 
-# Dictionary of available templates
 DEFAULT_TEMPLATES = {
     "general": GENERAL_TEMPLATE,
     "multiple_choice": MULTIPLE_CHOICE_TEMPLATE,
