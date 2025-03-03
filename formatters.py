@@ -1,4 +1,5 @@
-# formats from paper "How I learned to start worrying about prompt formatting"
+# formats from paper "How I learned to start worrying about prompt formatting" and additional formats
+
 
 def to_roman(num):
     roman_dict = {
@@ -62,6 +63,14 @@ def angle_brackets(x):
     return f"<{x}>"
 
 
+def colon_suffix(x):
+    return f"{x}:"
+
+
+def question_suffix(x):
+    return f"{x}?"
+
+
 # Item formatting functions - Type 2
 def increment(x):
     return x + 1
@@ -79,10 +88,14 @@ def to_unicode_fraction(x):
     return f"{0x215F + x}"
 
 
+def suffix_00(x):
+    return f"{x}00"
+
+
 # Format classes
 S1 = ["", " ", "\n", " -- ", "; \n", " || ", "< sep >", " - ", "\n "]
 S2 = ["", " ", "  ", "\t"]
-C = ["", " ::: ", " :: ", " : ", "\n\t", "\n ", ": ", " - ", "\t"]
+C = ["", " ::: ", " :: ", " : ", "\n\t", "\n ", ": ", " - ", "\t", "#", "<>", ":"]
 Fcasing = [no_change, to_title, to_upper, to_lower]
 Fitem1 = [
     parentheses,
@@ -91,6 +104,8 @@ Fitem1 = [
     paren_space_suffix,
     square_brackets,
     angle_brackets,
+    colon_suffix,
+    question_suffix,
 ]
 Fitem2 = [
     increment,
@@ -99,6 +114,7 @@ Fitem2 = [
     to_unicode_fraction,
     to_roman,
     to_lower_roman,
+    suffix_00,
 ]
 
 

@@ -110,21 +110,9 @@ class FormatExplorer:
 
                 logging.info(f"Raw Response: {prediction}")
 
-                if task_id == "069":
-                    if "1" in prediction:
-                        prediction = "1"
-                    elif "2" in prediction:
-                        prediction = "2"
-                    else:
-                        logging.warning(f"Invalid prediction format: {prediction}")
-                        continue
-
                 ground_truth = instance["output"][0]
 
-                if task_id == "069":
-                    is_correct = prediction == ground_truth
-                else:
-                    is_correct = prediction == ground_truth
+                is_correct = prediction == ground_truth
 
                 correct += int(is_correct)
                 total += 1
@@ -244,13 +232,8 @@ class FormatExplorer:
 def main():
     explorer = FormatExplorer()
 
-    tasks = [
-        "050",
-        "065",
-        "069",
-        "070",
-        "1297",
-    ]
+    # task050, task065, task069, task070, task114, task133, task190, task279, task280, task286, task316, task317, task319, task320, task322, task323, task325, task326, task327, task328, task335, task337, task385, task580, task607, task608, task609, task904, task905, task1186, task1283, task1284, task1297, task1347, task1387, task1420, task1502, task1612, task1724
+    tasks = []
 
     task_accuracies = {}
 
