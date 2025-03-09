@@ -2,6 +2,8 @@
 
 This project was developed as part of a Masters Seminar at the Technical University of Munich (TUM) focused on exploring and optimizing prompt formatting for large language models. With ever increasing context lengths and prompts, formatting correctly to ensure the model is able to work with them is crucial.
 
+The project report and poster can be found inside the `bin/` directory as PDF files.
+
 ## Project Overview
 
 This project consists of two main components:
