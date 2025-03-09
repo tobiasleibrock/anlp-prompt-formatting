@@ -1,0 +1,836 @@
+{
+    "task": {
+        "task": {
+            "total": 1600,
+            "correct": 1436
+        },
+        "case": {
+            "total": 1600,
+            "correct": 1428
+        },
+        "example": {
+            "total": 1600,
+            "correct": 1423
+        },
+        "game": {
+            "total": 1600,
+            "correct": 1429
+        }
+    },
+    "answer": {
+        "answer": {
+            "total": 140,
+            "correct": 132
+        },
+        "choice": {
+            "total": 140,
+            "correct": 132
+        },
+        "option": {
+            "total": 140,
+            "correct": 130
+        },
+        "options": {
+            "total": 140,
+            "correct": 131
+        }
+    },
+    "select": {
+        "select": {
+            "total": 60,
+            "correct": 59
+        },
+        "choose": {
+            "total": 60,
+            "correct": 59
+        },
+        "pick": {
+            "total": 60,
+            "correct": 59
+        }
+    },
+    "exactly": {
+        "exactly": {
+            "total": 230,
+            "correct": 211
+        },
+        "about": {
+            "total": 230,
+            "correct": 210
+        },
+        "only": {
+            "total": 230,
+            "correct": 208
+        },
+        "approximately": {
+            "total": 230,
+            "correct": 209
+        }
+    },
+    "story": {
+        "story": {
+            "total": 215,
+            "correct": 195
+        },
+        "narrative": {
+            "total": 215,
+            "correct": 190
+        },
+        "sentence": {
+            "total": 215,
+            "correct": 187
+        }
+    },
+    "you": {
+        "you": {
+            "total": 820,
+            "correct": 730
+        },
+        "they": {
+            "total": 820,
+            "correct": 727
+        },
+        "we": {
+            "total": 820,
+            "correct": 736
+        },
+        "players": {
+            "total": 405,
+            "correct": 360
+        },
+        "contestants": {
+            "total": 820,
+            "correct": 728
+        },
+        "users": {
+            "total": 820,
+            "correct": 729
+        },
+        "teams": {
+            "total": 405,
+            "correct": 363
+        },
+        "participants": {
+            "total": 415,
+            "correct": 374
+        },
+        "students": {
+            "total": 415,
+            "correct": 373
+        }
+    },
+    "otherwise": {
+        "otherwise": {
+            "total": 430,
+            "correct": 383
+        },
+        "then": {
+            "total": 430,
+            "correct": 379
+        },
+        "or": {
+            "total": 430,
+            "correct": 381
+        },
+        "not": {
+            "total": 430,
+            "correct": 383
+        },
+        "say": {
+            "total": 430,
+            "correct": 379
+        },
+        "and": {
+            "total": 430,
+            "correct": 382
+        },
+        "using": {
+            "total": 430,
+            "correct": 376
+        },
+        "read": {
+            "total": 430,
+            "correct": 379
+        }
+    },
+    "job": {
+        "job": {
+            "total": 1000,
+            "correct": 888
+        },
+        "task": {
+            "total": 1000,
+            "correct": 882
+        },
+        "goal": {
+            "total": 1000,
+            "correct": 886
+        },
+        "challenge": {
+            "total": 1000,
+            "correct": 876
+        },
+        "objective": {
+            "total": 1000,
+            "correct": 883
+        },
+        "answer": {
+            "total": 1000,
+            "correct": 878
+        },
+        "question": {
+            "total": 1000,
+            "correct": 868
+        }
+    },
+    "your": {
+        "your": {
+            "total": 390,
+            "correct": 346
+        },
+        "the": {
+            "total": 390,
+            "correct": 339
+        },
+        "our": {
+            "total": 390,
+            "correct": 343
+        },
+        "their": {
+            "total": 390,
+            "correct": 349
+        },
+        "my": {
+            "total": 390,
+            "correct": 344
+        },
+        "you": {
+            "total": 390,
+            "correct": 347
+        },
+        "her": {
+            "total": 390,
+            "correct": 349
+        }
+    },
+    "label": {
+        "label": {
+            "total": 60,
+            "correct": 33
+        },
+        "then": {
+            "total": 10,
+            "correct": 0
+        },
+        "labels": {
+            "total": 20,
+            "correct": 7
+        },
+        "say": {
+            "total": 10,
+            "correct": 0
+        },
+        "flag": {
+            "total": 10,
+            "correct": 0
+        },
+        "own": {
+            "total": 10,
+            "correct": 9
+        },
+        "text": {
+            "total": 10,
+            "correct": 8
+        },
+        "original": {
+            "total": 10,
+            "correct": 9
+        },
+        "whole": {
+            "total": 10,
+            "correct": 9
+        },
+        "entirety": {
+            "total": 10,
+            "correct": 9
+        },
+        "rank": {
+            "total": 10,
+            "correct": 7
+        },
+        "labeled": {
+            "total": 10,
+            "correct": 7
+        },
+        "labeling": {
+            "total": 10,
+            "correct": 7
+        },
+        "a": {
+            "total": 20,
+            "correct": 13
+        },
+        "the": {
+            "total": 20,
+            "correct": 13
+        },
+        "another": {
+            "total": 20,
+            "correct": 13
+        },
+        "an": {
+            "total": 20,
+            "correct": 13
+        },
+        "additional": {
+            "total": 20,
+            "correct": 15
+        },
+        "explanation": {
+            "total": 10,
+            "correct": 1
+        },
+        "clue": {
+            "total": 10,
+            "correct": 1
+        },
+        "answer": {
+            "total": 10,
+            "correct": 1
+        }
+    },
+    "given": {
+        "given": {
+            "total": 470,
+            "correct": 272
+        },
+        "assigned": {
+            "total": 190,
+            "correct": 107
+        },
+        "using": {
+            "total": 50,
+            "correct": 28
+        },
+        "shown": {
+            "total": 110,
+            "correct": 60
+        },
+        "presented": {
+            "total": 40,
+            "correct": 14
+        },
+        "told": {
+            "total": 70,
+            "correct": 40
+        },
+        "reading": {
+            "total": 110,
+            "correct": 68
+        },
+        "longest": {
+            "total": 10,
+            "correct": 8
+        },
+        "shortest": {
+            "total": 10,
+            "correct": 8
+        },
+        "last": {
+            "total": 30,
+            "correct": 19
+        },
+        "following": {
+            "total": 40,
+            "correct": 19
+        },
+        "first": {
+            "total": 80,
+            "correct": 35
+        },
+        "same": {
+            "total": 80,
+            "correct": 17
+        },
+        "previous": {
+            "total": 20,
+            "correct": 4
+        },
+        "entire": {
+            "total": 20,
+            "correct": 6
+        },
+        "whole": {
+            "total": 10,
+            "correct": 2
+        },
+        "correct": {
+            "total": 40,
+            "correct": 12
+        },
+        "corresponding": {
+            "total": 20,
+            "correct": 6
+        },
+        "answer": {
+            "total": 10,
+            "correct": 4
+        },
+        "letter": {
+            "total": 10,
+            "correct": 3
+        },
+        "next": {
+            "total": 20,
+            "correct": 8
+        },
+        "initial": {
+            "total": 10,
+            "correct": 4
+        },
+        "final": {
+            "total": 10,
+            "correct": 2
+        },
+        "facing": {
+            "total": 20,
+            "correct": 14
+        },
+        "writing": {
+            "total": 50,
+            "correct": 38
+        },
+        "choosing": {
+            "total": 50,
+            "correct": 39
+        },
+        "picking": {
+            "total": 20,
+            "correct": 20
+        },
+        "selecting": {
+            "total": 50,
+            "correct": 39
+        },
+        "allocated": {
+            "total": 20,
+            "correct": 16
+        },
+        "offered": {
+            "total": 40,
+            "correct": 30
+        },
+        "asked": {
+            "total": 20,
+            "correct": 9
+        },
+        "posting": {
+            "total": 40,
+            "correct": 22
+        },
+        "sending": {
+            "total": 40,
+            "correct": 25
+        },
+        "sent": {
+            "total": 20,
+            "correct": 11
+        },
+        "learning": {
+            "total": 20,
+            "correct": 19
+        },
+        "considering": {
+            "total": 10,
+            "correct": 8
+        },
+        "seeking": {
+            "total": 60,
+            "correct": 29
+        },
+        "of": {
+            "total": 10,
+            "correct": 8
+        },
+        "in": {
+            "total": 20,
+            "correct": 11
+        },
+        "from": {
+            "total": 10,
+            "correct": 8
+        },
+        "receiving": {
+            "total": 110,
+            "correct": 60
+        },
+        "getting": {
+            "total": 50,
+            "correct": 32
+        },
+        "requesting": {
+            "total": 40,
+            "correct": 15
+        },
+        "allowed": {
+            "total": 10,
+            "correct": 3
+        },
+        "requested": {
+            "total": 10,
+            "correct": 5
+        },
+        "quoting": {
+            "total": 10,
+            "correct": 5
+        },
+        "message": {
+            "total": 10,
+            "correct": 8
+        },
+        "user": {
+            "total": 10,
+            "correct": 8
+        },
+        "word": {
+            "total": 10,
+            "correct": 2
+        },
+        "generating": {
+            "total": 10,
+            "correct": 0
+        },
+        "provided": {
+            "total": 10,
+            "correct": 3
+        },
+        "making": {
+            "total": 30,
+            "correct": 21
+        },
+        "both": {
+            "total": 20,
+            "correct": 17
+        },
+        "other": {
+            "total": 10,
+            "correct": 4
+        },
+        "original": {
+            "total": 10,
+            "correct": 4
+        },
+        "second": {
+            "total": 10,
+            "correct": 5
+        },
+        "most": {
+            "total": 10,
+            "correct": 2
+        },
+        "particular": {
+            "total": 10,
+            "correct": 4
+        },
+        "specific": {
+            "total": 10,
+            "correct": 4
+        },
+        "certain": {
+            "total": 10,
+            "correct": 2
+        },
+        "single": {
+            "total": 10,
+            "correct": 2
+        },
+        "standard": {
+            "total": 10,
+            "correct": 5
+        },
+        "main": {
+            "total": 10,
+            "correct": 4
+        },
+        "classic": {
+            "total": 10,
+            "correct": 3
+        },
+        "answering": {
+            "total": 10,
+            "correct": 8
+        },
+        "for": {
+            "total": 10,
+            "correct": 2
+        },
+        "consider": {
+            "total": 10,
+            "correct": 1
+        },
+        "solving": {
+            "total": 10,
+            "correct": 3
+        }
+    },
+    "should": {
+        "should": {
+            "total": 240,
+            "correct": 121
+        },
+        "would": {
+            "total": 140,
+            "correct": 63
+        },
+        "will": {
+            "total": 120,
+            "correct": 56
+        },
+        "must": {
+            "total": 190,
+            "correct": 94
+        },
+        "might": {
+            "total": 90,
+            "correct": 40
+        },
+        "did": {
+            "total": 20,
+            "correct": 17
+        },
+        "do": {
+            "total": 20,
+            "correct": 16
+        },
+        "could": {
+            "total": 130,
+            "correct": 66
+        },
+        "can": {
+            "total": 90,
+            "correct": 43
+        },
+        "may": {
+            "total": 50,
+            "correct": 18
+        },
+        "cannot": {
+            "total": 60,
+            "correct": 33
+        },
+        "\"": {
+            "total": 10,
+            "correct": 7
+        },
+        "'": {
+            "total": 10,
+            "correct": 7
+        },
+        "else": {
+            "total": 10,
+            "correct": 7
+        },
+        ".": {
+            "total": 10,
+            "correct": 7
+        },
+        "!": {
+            "total": 10,
+            "correct": 8
+        },
+        "shall": {
+            "total": 10,
+            "correct": 9
+        },
+        "they": {
+            "total": 10,
+            "correct": 8
+        },
+        "women": {
+            "total": 10,
+            "correct": 8
+        },
+        "men": {
+            "total": 10,
+            "correct": 8
+        },
+        "to": {
+            "total": 10,
+            "correct": 8
+        },
+        "people": {
+            "total": 10,
+            "correct": 8
+        }
+    },
+    "coherent": {
+        "coherent": {
+            "total": 30,
+            "correct": 28
+        },
+        "interesting": {
+            "total": 10,
+            "correct": 8
+        },
+        "relevant": {
+            "total": 10,
+            "correct": 9
+        },
+        "plausible": {
+            "total": 10,
+            "correct": 8
+        },
+        "meaningful": {
+            "total": 10,
+            "correct": 8
+        },
+        "possible": {
+            "total": 10,
+            "correct": 8
+        },
+        "complete": {
+            "total": 20,
+            "correct": 19
+        },
+        "finished": {
+            "total": 10,
+            "correct": 10
+        },
+        "told": {
+            "total": 10,
+            "correct": 10
+        },
+        "original": {
+            "total": 10,
+            "correct": 10
+        },
+        "incomplete": {
+            "total": 10,
+            "correct": 9
+        },
+        "incorrect": {
+            "total": 10,
+            "correct": 9
+        },
+        "correct": {
+            "total": 10,
+            "correct": 9
+        },
+        "meaningless": {
+            "total": 10,
+            "correct": 9
+        }
+    },
+    "statement": {
+        "statement": {
+            "total": 30,
+            "correct": 23
+        },
+        "warning": {
+            "total": 10,
+            "correct": 4
+        },
+        "threat": {
+            "total": 10,
+            "correct": 5
+        },
+        "prediction": {
+            "total": 10,
+            "correct": 5
+        },
+        "fear": {
+            "total": 10,
+            "correct": 5
+        },
+        "book": {
+            "total": 10,
+            "correct": 8
+        },
+        "bible": {
+            "total": 10,
+            "correct": 8
+        },
+        "newspaper": {
+            "total": 10,
+            "correct": 8
+        },
+        "quran": {
+            "total": 10,
+            "correct": 8
+        },
+        "textbook": {
+            "total": 10,
+            "correct": 8
+        },
+        "language": {
+            "total": 10,
+            "correct": 8
+        },
+        "word": {
+            "total": 10,
+            "correct": 9
+        },
+        "term": {
+            "total": 10,
+            "correct": 8
+        },
+        "phrase": {
+            "total": 10,
+            "correct": 7
+        }
+    },
+    "plausible": {
+        "plausible": {
+            "total": 40,
+            "correct": 37
+        },
+        "coherent": {
+            "total": 10,
+            "correct": 9
+        },
+        "interesting": {
+            "total": 10,
+            "correct": 9
+        },
+        "meaningful": {
+            "total": 10,
+            "correct": 9
+        },
+        "relevant": {
+            "total": 10,
+            "correct": 9
+        },
+        "identical": {
+            "total": 30,
+            "correct": 27
+        },
+        "correct": {
+            "total": 30,
+            "correct": 29
+        },
+        "incorrect": {
+            "total": 20,
+            "correct": 20
+        },
+        "incomplete": {
+            "total": 10,
+            "correct": 9
+        },
+        "similar": {
+            "total": 20,
+            "correct": 19
+        },
+        "valid": {
+            "total": 20,
+            "correct": 20
+        },
+        "true": {
+            "total": 10,
+            "correct": 10
+        },
+        "wrong": {
+            "total": 10,
+            "correct": 10
+        }
+    }
+}
